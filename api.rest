@@ -1,0 +1,87 @@
+GET http://localhost:8000/post/
+
+
+
+
+
+
+### create Comment on a post it take post_id
+POST http://localhost:8000/post/comment/c7293d2c-c954-4374-9676-72ff0543264a/
+Content-Type: application/json
+
+{
+  "text": "new comment from client 4"
+}
+
+
+
+###  update comment  it take comment_id  
+PUT http://localhost:8000/post/comment_id/7/
+Content-Type: application/json
+
+{
+  "text": "updated one"
+}
+
+###  Delete comment  it take comment_id  
+DELETE  http://localhost:8000/post/comment_id/5/
+
+
+### like
+GET http://localhost:8000/post/like/c7293d2c-c954-4374-9676-72ff0543264a/
+Content-Type: application/json
+
+
+### like or unlike
+
+POST http://localhost:8000/post/like/c7293d2c-c954-4374-9676-72ff0543264a/
+Content-Type: application/json
+
+
+
+
+### List Blocked Users
+GET http://127.0.0.1:8000/post/block/
+
+
+
+### Blocke user
+POST http://127.0.0.1:8000/post/block/
+Content-Type: application/json
+
+{
+  "blocked" : "183eb5e8-bd9a-4cd2-bd3e-52d91ff2f9a0"
+}
+
+
+
+
+### unocke user
+DELETE  http://127.0.0.1:8000/post/unblock/183eb5e8-bd9a-4cd2-bd3e-52d91ff2f9a0/
+Content-Type: application/json
+
+
+
+
+###
+GET http://127.0.0.1:8000/api/profile/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI4NTA4NzExLCJpYXQiOjE3Mjg0NTQ3MTEsImp0aSI6IjYxNmU5NDhlZjVmYTRmMTRiNzk4YTNmMzI5OWNlMjYzIiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.XKPkWKkMQDBJv3pSDHLk-7QD5-VuHlQG-Jl8kpf0J-k
+
+
+
+
+###
+GET http://127.0.0.1:8000/post/saved-posts/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI4NTUxODMzLCJpYXQiOjE3Mjg0OTc4MzMsImp0aSI6ImI2NTNiMDU3NjI1ZTQyZjBhZDZmMWJlOTQxMjJmMmU4IiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.qrK0WMofyj2oOW6LNDBLsA-eRzyZ39aHiSP8CTZ7SpY
+
+
+###
+POST http://127.0.0.1:8000/post/saved-posts/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI4NTUxODMzLCJpYXQiOjE3Mjg0OTc4MzMsImp0aSI6ImI2NTNiMDU3NjI1ZTQyZjBhZDZmMWJlOTQxMjJmMmU4IiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.qrK0WMofyj2oOW6LNDBLsA-eRzyZ39aHiSP8CTZ7SpY
+
+{
+  "post_id":"ce23f51b-ab95-42f2-a985-0c922ad494b2"
+}

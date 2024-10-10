@@ -1,0 +1,84 @@
+from django.db import models
+from django.contrib.auth.models import User
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.text[:20]}"
+
+    @property
+    def is_reply(self):
+        return self.parent is not None
+
+
+
+
+
+from rest_framework import serializers
+from .models import Comment
+
+class CommentSerializer(serializers.ModelSerializer):
+    replies = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'user', 'text', 'created_at', 'replies']
+
+    def get_replies(self, obj):
+        if obj.replies.exists():
+            return CommentSerializer(obj.replies.all(), many=True).data
+        return []
+
+
+from rest_framework import generics
+from .models import Comment
+from .serializers import CommentSerializer
+
+class CommentListView(generics.ListAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        return Comment.objects.filter(post_id=post_id, parent=None)  # Fetch only top-level comments
+
+
+
+
+
+
+
+
+blockkkkkkkkkkkkkkkkkkkkkk
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+class Block(models.Model):
+    blocker = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocking')
+    blocked = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocked_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('blocker', 'blocked')  # Ensure each pair is unique
+
+    def __str__(self):
+        return f"{self.blocker} blocked {self.blocked}"
+
+
+
+
+
+from rest_framework import serializers
+from .models import Block
+
+class BlockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Block
+        fields = ['blocker', 'blocked']

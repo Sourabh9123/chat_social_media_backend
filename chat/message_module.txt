@@ -1,0 +1,67 @@
+class Thread(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    participants = models.ManyToManyField(User, related_name='threads')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def get_receiver(self, sender):
+        # Return the other participant(s) in the thread who are not the sender
+        return self.participants.exclude(id=sender.id).first()  # Assuming 1-to-1 thread
+
+
+class Message(models.Model):
+    thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages")  
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)  
+    is_seen = models.BooleanField(default=False)
+
+    def __str__(self):
+        receiver = self.thread.get_receiver(self.sender)
+        return f"From -> {self.sender}  To -> {receiver}"
+
+
+
+# Assume we have a thread and a sender
+thread = Thread.objects.get(id=some_thread_id)
+sender = User.objects.get(id=some_sender_id)
+
+# Retrieve the receiver
+receiver = thread.get_receiver(sender)
+print(f"Receiver: {receiver.username}")
+
+# Creating a message
+message = Message.objects.create(thread=thread, sender=sender, content="Hello!")
+print(message)  # This will show "From -> Sender  To -> Receiver"
+
+
+
+from django.db.models import Count
+
+def get_thread_between_users(user1, user2):
+    # Get the thread that has exactly two participants (user1 and user2)
+    thread = Thread.objects.filter(participants=user1).filter(participants=user2).annotate(
+        num_participants=Count('participants')
+    ).filter(num_participants=2).first()
+
+    return thread
+
+
+user1 = User.objects.get(id=1)  # Example sender
+user2 = User.objects.get(id=2)  # Example receiver
+
+# Get the thread between the two users
+thread = get_thread_between_users(user1, user2)
+
+if thread:
+    print(f"Thread found: {thread.id}")
+else:
+    print("No existing thread found between these users.")
+
+
+if not thread:
+    # Create a new thread between user1 and user2
+    thread = Thread.objects.create()
+    thread.participants.add(user1, user2)
+    thread.save()
+    print(f"New thread created: {thread.id}")
