@@ -20,12 +20,19 @@ class Profile(models.Model):
     @property
     def followers(self):
         """Get all followers of the user."""
-        return User.objects.filter(followers__following=self.user)
+   
+        followers = User.objects.filter(following__following=self.user).distinct()
+        return followers
+        # return User.objects.filter(followers__following=self.user).exclude(id=self.user.id)
 
     @property
     def following(self):
         """Get all users that the user is following."""
-        return User.objects.filter(following__follower=self.user)
+   
+        followings = User.objects.filter(followers__follower=self.user).distinct()
+        return followings
+        # return User.objects.filter(following__follower=self.user).exclude(id=self.user.id)
+        # return User.objects.filter(following__follower=self.user)
     
 
     @property
@@ -44,13 +51,10 @@ class Profile(models.Model):
 
 
 class Follow(models.Model):
-   
     follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)# User who follows
     following = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE) # User being followed
-
     created_at = models.DateTimeField(auto_now_add=True)  # When the follow relationship was created
     updated_at = models.DateTimeField(auto_now=True)
-
     class Meta:
         unique_together = ('follower', 'following')  # Ensure unique relationships
 

@@ -2,6 +2,9 @@ GET http://localhost:8000/post/
 
 
 
+###
+GET http://localhost:8000/post/comment/c7293d2c-c954-4374-9676-72ff0543264a/
+Content-Type: application/json
 
 
 
@@ -16,8 +19,9 @@ Content-Type: application/json
 
 
 ###  update comment  it take comment_id  
-PUT http://localhost:8000/post/comment_id/7/
+PUT http://localhost:8000/post/comment_id/14/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5MjEwMjk4LCJpYXQiOjE3MjkxNTYyOTgsImp0aSI6ImU5NDE5Yjk0MGNlYjQ0OTE5NmVjOTBlZjg2ZjRkMzA3IiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.7hgaktvEgsvovdMU5UrinJLHI5HNy6YpG4Vw0kSo2Lc
 
 {
   "text": "updated one"
@@ -66,7 +70,7 @@ Content-Type: application/json
 ###
 GET http://127.0.0.1:8000/api/profile/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI4NTA4NzExLCJpYXQiOjE3Mjg0NTQ3MTEsImp0aSI6IjYxNmU5NDhlZjVmYTRmMTRiNzk4YTNmMzI5OWNlMjYzIiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.XKPkWKkMQDBJv3pSDHLk-7QD5-VuHlQG-Jl8kpf0J-k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NjMyMTYyLCJpYXQiOjE3Mjk1NzgxNjIsImp0aSI6IjM4OWEzZWYxMWZmZTQzYTliODQxOWMzOTU5NGExMzVhIiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.rYeKrZ9yvRMrZBN67SY5c15ejHLmK1QWhgNcUCnQ_FU
 
 
 
@@ -85,3 +89,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 {
   "post_id":"ce23f51b-ab95-42f2-a985-0c922ad494b2"
 }
+
+
+### getall followers by user id
+GET http://127.0.0.1:8000/api/profile/follow/435fcc29-e07f-488f-b99d-611f60dcfc09/?type=followers
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NjMyMTYyLCJpYXQiOjE3Mjk1NzgxNjIsImp0aSI6IjM4OWEzZWYxMWZmZTQzYTliODQxOWMzOTU5NGExMzVhIiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.rYeKrZ9yvRMrZBN67SY5c15ejHLmK1QWhgNcUCnQ_FU
+
+
+### get all followings
+# http://127.0.0.1:8000/api/profile/follow/user_id/?type=following
+GET http://127.0.0.1:8000/api/profile/follow/435fcc29-e07f-488f-b99d-611f60dcfc09/?type=following
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NjMyMTYyLCJpYXQiOjE3Mjk1NzgxNjIsImp0aSI6IjM4OWEzZWYxMWZmZTQzYTliODQxOWMzOTU5NGExMzVhIiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.rYeKrZ9yvRMrZBN67SY5c15ejHLmK1QWhgNcUCnQ_FU

@@ -9,18 +9,22 @@ User = get_user_model()
 
 
 class UserSerializerGeneralInfo(ModelSerializer):
+    profile_picture = serializers.URLField(source="profile.profile_picture", read_only=True)
     class Meta:
         model = User
-        fields  = ['id',  "email", "first_name", "last_name",]
+        fields  = ['id',  "email", "first_name", "last_name", "username" ,"profile_picture"]
 
 
 
 class UserSerializer(ModelSerializer):
+    profile_picture = serializers.URLField(read_only=True, source="profile.profile_picture")
     class Meta:
         model = User
         # fields  = "__all__"
-        # fields  = ['id',  "email", "first_name", "last_name",   "is_staff" ,  "is_superuser"]
-        exclude = ['password']
+        fields  = ['id',  "email", "first_name", "last_name",   "is_staff" ,  "is_superuser","username", 'profile_picture']
+        read_only_fields = ['username']
+        # exclude = ['password']
+        
         
         
 

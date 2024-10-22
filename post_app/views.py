@@ -80,6 +80,8 @@ class PostListCreateView(GenericAPIView):
         # will get user by token send from frontend
         user = request.user
         serializer = PostCreateSerializer(data=request.data)
+        print("user requested ------------------- ", user)
+        print(request.data)
 
         
         if  serializer.is_valid():
@@ -88,13 +90,16 @@ class PostListCreateView(GenericAPIView):
             
             post = Post.objects.create(
                 title  = data['title'],
-                image  = data['image'],
+                image  = data.get('image', ''), 
                 author = user
                                 )
+            print("objects created ---------", post)
             post_serializer = PostCreateSerializer(post)
+       
 
 
             return Response({"data": post_serializer.data},  status=status.HTTP_201_CREATED )
+        return  Response({"data": serializer.errors},  status=status.HTTP_400_BAD_REQUEST )
         return Response({"data": "data"},  status=status.HTTP_200_OK )
     
 
@@ -146,7 +151,7 @@ class CommentListCreateView(GenericAPIView):
     
     def get(self, request, *args, **kwargs):
         post_id = kwargs.get("post_id") # here we need to query all comments of single post
-        comment = Comment.objects.all()
+        comment = Comment.objects.filter(post_id=post_id)
         serializer = self.serializer_class(comment, many=True)
         
         return Response({"data":serializer.data}, status=status.HTTP_200_OK)
@@ -176,9 +181,11 @@ class CommentListCreateView(GenericAPIView):
 
 
 class CommentDetailView(GenericAPIView):
+    serializer_class = CommentSerializer
 
     def get(self, request, *args, **kwargs):
         comment_id = kwargs.get("comment_id")
+        print(request.data, " ------------data")
         comment = get_object_or_404(Comment, id=comment_id)
 
         user = request.user
@@ -188,6 +195,7 @@ class CommentDetailView(GenericAPIView):
         
     def put(self, request, *args, **kwargs):
         comment_id = kwargs.get("comment_id")
+        print(request.data, " ------------data")
         comment = get_object_or_404(Comment, id=comment_id)
 
         user = request.user

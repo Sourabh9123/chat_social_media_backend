@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from profile_app.models import Profile
+from profile_app.models import Profile, Follow
 from account.serializers import UserSerializerGeneralInfo
 from post_app.models import Post
 
@@ -13,10 +13,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     following = UserSerializerGeneralInfo(many=True, read_only=True)
     full_name = serializers.SerializerMethodField(read_only=True, method_name="get_full_name")
     total_post = serializers.SerializerMethodField(read_only=True, method_name="get_total_post")
+    username = serializers.CharField(source="user.username")
     
     class Meta:
         model = Profile
         fields = [ 'user',
+                  'username',
                    'bio',
                    'full_name',
                    'total_post',
@@ -38,3 +40,14 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_total_post(self, obj):
         return Post.objects.filter(author=obj.user).count()
     
+
+
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    follower = serializers.ReadOnlyField(source='follower.username')
+    following = serializers.ReadOnlyField(source='following.username')
+
+    class Meta:
+        model = Follow
+        fields = ['follower', 'following', 'created_at']
