@@ -102,3 +102,46 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 GET http://127.0.0.1:8000/api/profile/follow/435fcc29-e07f-488f-b99d-611f60dcfc09/?type=following
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NjMyMTYyLCJpYXQiOjE3Mjk1NzgxNjIsImp0aSI6IjM4OWEzZWYxMWZmZTQzYTliODQxOWMzOTU5NGExMzVhIiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.rYeKrZ9yvRMrZBN67SY5c15ejHLmK1QWhgNcUCnQ_FU
+
+
+### follow a user by passing his user id in payload
+POST  http://127.0.0.1:8000/api/profile/follow/435fcc29-e07f-488f-b99d-611f60dcfc09/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NjMyMTYyLCJpYXQiOjE3Mjk1NzgxNjIsImp0aSI6IjM4OWEzZWYxMWZmZTQzYTliODQxOWMzOTU5NGExMzVhIiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.rYeKrZ9yvRMrZBN67SY5c15ejHLmK1QWhgNcUCnQ_FU
+
+{
+  "user_id" : "055721d7-6ba4-4044-8b9b-640a21f727bd"
+}
+
+
+
+
+### unfollow a user  
+DELETE   http://127.0.0.1:8000/api/profile/follow/435fcc29-e07f-488f-b99d-611f60dcfc09/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5NjMyMTYyLCJpYXQiOjE3Mjk1NzgxNjIsImp0aSI6IjM4OWEzZWYxMWZmZTQzYTliODQxOWMzOTU5NGExMzVhIiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.rYeKrZ9yvRMrZBN67SY5c15ejHLmK1QWhgNcUCnQ_FU
+
+{
+  "user_id" : "055721d7-6ba4-4044-8b9b-640a21f727bd"
+}
+
+
+
+
+
+
+
+### suggestions
+GET   http://127.0.0.1:8000/api/profile/suggestion/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5ODEyNjExLCJpYXQiOjE3Mjk3NTg2MTEsImp0aSI6ImIzOTJjYjliNzEwODQyMzFiYjA1OTQ5OTU5NTE3ZmU4IiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.xPweDQjchnrRjmngMFRYgR5Xi4qfza7yBo2tSE1FaRw
+
+
+
+# {
+#   "count": 6,
+#   "next": "http://127.0.0.1:8000/api/profile/suggestion/?page=2",
+#   "previous": null,
+#   "results": [
+#   ]
+# }

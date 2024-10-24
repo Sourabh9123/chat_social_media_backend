@@ -42,6 +42,13 @@ class ProfileSerializer(serializers.ModelSerializer):
     
 
 
+class ProfileGeneralSerializer(serializers.ModelSerializer):
+    username  = serializers.CharField(source="user.username",  read_only=True)
+    class Meta:
+        model = Profile
+        fields = ["user", "profile_picture",'username']
+
+
 
 
 class FollowSerializer(serializers.ModelSerializer):

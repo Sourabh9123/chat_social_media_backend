@@ -3,6 +3,9 @@ from account.models import User  # Adjust to your app name
 from django.utils import timezone
 import random
 import string
+import requests
+
+
 
 class Command(BaseCommand):
     help = 'Create bulk random users and trigger signals'
@@ -28,10 +31,12 @@ class Command(BaseCommand):
             # Set the password and username
             user.set_password(password)
             user.username = user.generate_unique_username()
+            
 
             # Save the user (this will trigger signals and any logic in the save() method)
             user.save()
-
+            
+            
             # If you want to log in the user programmatically, you could add login logic here
             # For example: login(request, user)
 
@@ -42,3 +47,5 @@ class Command(BaseCommand):
     def random_string(self, length):
         # Generate a random string of letters
         return ''.join(random.choices(string.ascii_lowercase, k=length))
+
+#python manage.py create_bulk_users 1
