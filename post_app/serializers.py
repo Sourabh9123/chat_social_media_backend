@@ -84,7 +84,7 @@ class PostListSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
   
         if user.is_authenticated:
-            print(user, " -----user")
+            # print(user, " -----user")
             return SavedPost.objects.filter(user=user, post=obj).exists()
         return False
 

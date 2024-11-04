@@ -30,10 +30,10 @@ class UserAdmin(BaseUserAdmin):
         ),
     )
 
-    list_display = ('email', 'id','first_name','last_name', "username", 'is_staff', 'last_login')
+    list_display = ( "username",'id','first_name','last_name', 'email', 'is_staff', 'last_login')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     list_display_links = ('email','first_name','last_name','id',)
-    search_fields = ('email',)
+    search_fields = ('email','first_name','last_name','id')
     ordering = ["-date_joined", 'id'] 
     filter_horizontal = ('groups', 'user_permissions',)
 

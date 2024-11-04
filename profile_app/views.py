@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 
-from django.db.models import Q
+from django.db.models import Q , Exists, OuterRef
 
 
 
@@ -30,6 +30,18 @@ class ProfileCreateListView(GenericAPIView):
         return Response({"data":serializer.data}, status=status.HTTP_200_OK)
     
 
+class GetOtherProfileView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def  get(self, request, *args, **kwargs):
+        current_user = request.user
+        
+        profile_of_user = kwargs.get('user_id')
+        profile = get_object_or_404(Profile, user_id=profile_of_user)
+        serializer = ProfileSerializer(profile)
+        print(serializer.data)
+        return Response({"data": serializer.data}, status=status.HTTP_200_OK)
+
 
 
 class UserProfileDetails(GenericAPIView):
@@ -46,9 +58,9 @@ class UserProfileDetails(GenericAPIView):
         # for user in user_follow:
         #     print(user.id)
         
-        print(followers, "followers")
+        # print(followers, "followers")
         following = get_profile.following # people whom i follow
-        print(following, "followings")
+        # print(following, "followings")
 
         # print(serializer.data)
         return Response({"data":serializer.data}, status=status.HTTP_200_OK)
@@ -57,6 +69,7 @@ class UserProfileDetails(GenericAPIView):
 
 
 
+# this view is retriving onlu current user followers and followings
 class FollowAPIView(GenericAPIView):
 
     """
@@ -76,14 +89,28 @@ class FollowAPIView(GenericAPIView):
         """Retrieve followers or following users."""
         user_id = kwargs.get('user_id')
         user = get_object_or_404(User, id=user_id)
+        current_user = request.user
+
+        
+            
 
         if request.query_params.get('type') == 'followers':
-            followers = Follow.objects.filter(following=user)
+            # Check if each follower is followed by the current user
+            followers = Follow.objects.filter(following=user).annotate(
+            is_followed_by_current_user=Exists(
+                Follow.objects.filter(follower=current_user, following=OuterRef('follower'))
+                    )
+                )
             serializer = self.get_serializer(followers, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         elif request.query_params.get('type') == 'following':
-            following = Follow.objects.filter(follower=user)
+            # Check if each following user is followed by the current user
+            following = Follow.objects.filter(follower=user).annotate(
+            is_followed_by_current_user=Exists(
+                Follow.objects.filter(follower=current_user, following=OuterRef('following'))
+                    )
+                )
             serializer = self.get_serializer(following, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -116,12 +143,12 @@ class RemoveFollowerView(GenericAPIView):
     def delete(self, request, *args, **kwargs):
         """Delete a follow relationship (unfollow a user)."""
         user_to_unfollow_id = kwargs.get('user_id')
-        print(user_to_unfollow_id,"------------------------")
+        # print(user_to_unfollow_id,"------------------------")
 
         user_to_unfollow = get_object_or_404(User, id=user_to_unfollow_id)
-        print(user_to_unfollow, "------------------------------")
+        # print(user_to_unfollow, "------------------------------")
         follower =  Follow.objects.filter(follower=user_to_unfollow, following=request.user)
-        print(follower, '-----------------------------------')
+        # print(follower, '-----------------------------------')
         # follow = Follow.objects.filter(follower=request.user, following=user_to_unfollow)
         if follower.exists():
             follower.delete()
@@ -137,12 +164,12 @@ class UnfollowView(GenericAPIView):
     def delete(self, request, *args, **kwargs):
         """Delete a follow relationship (unfollow a user)."""
         user_to_unfollow_id = kwargs.get('user_id')
-        print(user_to_unfollow_id,"------------------------")
+        # print(user_to_unfollow_id,"------------------------")
 
         user_to_unfollow = get_object_or_404(User, id=user_to_unfollow_id)
-        print(user_to_unfollow, "------------------------------")
+        # print(user_to_unfollow, "------------------------------")
         follow = Follow.objects.filter(follower=request.user, following=user_to_unfollow)
-        print(follow)
+        # print(follow)
         if follow.exists():
             follow.delete()
             return Response({"detail": "Successfully unfollowed the user."}, status=status.HTTP_204_NO_CONTENT)
@@ -189,7 +216,7 @@ class FollowSuggestionView(GenericAPIView):
         user = request.user  # Get the current authenticated user
         following_ids = Follow.objects.filter(follower=user).values_list('following_id', flat=True)
         
-        # Start with the suggestions that exclude followed and current user
+        # Start with the suggestions that exclude followed and current users
         suggestions = Profile.objects.exclude(Q(user__id__in=following_ids) | Q(id=user.id)).select_related('user').order_by('?')
 
         # Get the search query from the request
@@ -203,16 +230,25 @@ class FollowSuggestionView(GenericAPIView):
                 # | Q(user__last_name__icontains=search_query) 
                 #| Q(bio__icontains=search_query)  # Add more fields as needed
             )
+            # print(suggestions)
+            suggestions = suggestions.annotate(
+                    is_following=Exists(
+                        Follow.objects.filter(follower=user, following=OuterRef('user'))
+                    )
+                )
 
+            # print(suggestions.is_following, " ---------------------------")
            
             serializer = ProfileGeneralSerializer(suggestions, many=True)
             base_url = "http://127.0.0.1:8000"
             for i in serializer.data:  
                 i['profile_picture'] = base_url+i['profile_picture']
+
             
             
             return  Response({
             "count": 0,
+            
             "next": "http://127.0.0.1:8000/api/profile/suggestion/?page=1",
             "previous": None,
             "results": serializer.data
@@ -223,12 +259,124 @@ class FollowSuggestionView(GenericAPIView):
         page = self.paginate_queryset(suggestions)
         if page is not None:
             serializer = self.get_paginated_response(self.get_serializer(page, many=True).data)
-            print(serializer)
+            # print(serializer)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         # In case there's no pagination applied, return all (which shouldn't happen with the setup)
         serializer = self.get_serializer(suggestions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
+class OthersFollowers(GenericAPIView):
+    serializer_class = FollowSerializer
+
+    def get(self, request, *args, **kwargs):
+    
+        current_user = request.user
+        user_id = kwargs.get('user_id')
+        user = get_object_or_404(User, id=user_id)
+        followers = Follow.objects.filter(following=user)
+        
+        # Add an extra field to check if each follower is followed by the current user
+        followers_data = []
+        for follower in followers:
+            follower_data = FollowSerializer(follower).data
+            follower_user = follower.follower
+            # print(follower_user.profile.profile_picture, "this is profile -------------------------")
+            BASE_URL = "http://localhost:8000/media/"
+            # follower_data['profile_picture'] = BASE_URL + str(follower_user.profile.profile_picture)
+            follower_data['profile_picture'] = str(follower_user.profile.profile_picture)
+            follower_data['user_id'] = str(follower_user.id)
+            follower_data['is_followed_by_current_user'] = Follow.objects.filter(follower=current_user, following=follower_user).exists()
+            followers_data.append(follower_data)
+    
+        return Response({"followers": followers_data}, status=status.HTTP_200_OK)
+    
+
+
+class OtherFollowings(GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        current_user = request.user
+        user_id = kwargs.get('user_id')
+        user = get_object_or_404(User, id=user_id)
+        followings = Follow.objects.filter(follower=user)
+        
+
+        followings_data = []
+        for following in followings:
+            following_data = FollowSerializer(following).data
+            following_user = following.following
+        
+            # following_data['profile_picture'] = following_user.
+            following_data['user_id'] = str(following_user.id)
+            following_data['profile_picture'] = str(following_user.profile.profile_picture)
+            following_data['is_followed_by_current_user'] = Follow.objects.filter(follower=current_user, following=following_user).exists()
+            followings_data.append(following_data)
+
+        return Response({"followings": followings_data}, status=status.HTTP_200_OK)
+
+
+        
+        
+
+
+# class FollowerAndFollowingsCountView(GenericAPIView):
+    
+#     serializer_class = FollowSerializer
+
+#     def get(self, request, *args, **kwargs):
+#         user_id = kwargs.get('user_id')
+#         user = get_object_or_404(User, id= user_id)
+#         if request.query_params.get('type') == 'followers':
+#             count = Follow.objects.filter(following=user).count()
+#             return Response ({"numbers_of_followers":str(count)}, status=status.HTTP_200_OK)
+#         elif request.query_params.get('type') == 'following':
+#             count = Follow.objects.filter(follower=user).count()
+#             return Response ({"numbers_of_followings":str(count)}, status=status.HTTP_200_OK)
+#         return Response({"Error":"Something Went Wrong"}, status=status.HTTP_200_OK)
+
+
+
+
+
+
+# class FollowAndFollowingOthers(GenericAPIView):
+#     serializer_class = FollowSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, *args, **kwargs):
+#         current_user = request.user
+
+#         """Retrieve followers or following users."""
+#         user_id = kwargs.get('user_id')
+#         user = get_object_or_404(User, id=user_id)
+
+#         if request.query_params.get('type') == 'followers':
+#             # Check if each follower is followed by the current user
+#             followers = Follow.objects.filter(following=user).annotate(
+#             is_followed_by_current_user=Exists(
+#                 Follow.objects.filter(follower=current_user, following=OuterRef('follower'))
+#                     )
+#                 )
+#             serializer = self.get_serializer(followers, many=True)
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+        
+#         elif request.query_params.get('type') == 'following':
+#             # Check if each following user is followed by the current user
+#             following = Follow.objects.filter(follower=user).annotate(
+#             is_followed_by_current_user=Exists(
+#                 Follow.objects.filter(follower=current_user, following=OuterRef('following'))
+#                     )
+#                 )
+#             serializer = self.get_serializer(following, many=True)
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+
+#         return Response({"detail": "Invalid request. Provide type=followers or type=following in query params."}, 
+#                         status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
@@ -249,5 +397,3 @@ class FollowSuggestionView(GenericAPIView):
 
 #         # Return the serialized data as a response
 #         return Response(serializer.data)
-
-

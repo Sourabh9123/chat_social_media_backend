@@ -80,8 +80,8 @@ class PostListCreateView(GenericAPIView):
         # will get user by token send from frontend
         user = request.user
         serializer = PostCreateSerializer(data=request.data)
-        print("user requested ------------------- ", user)
-        print(request.data)
+        # print("user requested ------------------- ", user)
+        # print(request.data)
 
         
         if  serializer.is_valid():
@@ -185,7 +185,7 @@ class CommentDetailView(GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         comment_id = kwargs.get("comment_id")
-        print(request.data, " ------------data")
+        # print(request.data, " ------------data")
         comment = get_object_or_404(Comment, id=comment_id)
 
         user = request.user
@@ -195,7 +195,7 @@ class CommentDetailView(GenericAPIView):
         
     def put(self, request, *args, **kwargs):
         comment_id = kwargs.get("comment_id")
-        print(request.data, " ------------data")
+        # print(request.data, " ------------data")
         comment = get_object_or_404(Comment, id=comment_id)
 
         user = request.user
@@ -280,7 +280,7 @@ class BlockUserListCreateView(GenericAPIView):
             return Response( {"blocked users" : "You Haven't Blocked Anyone Yet."}, status=status.HTTP_200_OK)
 
         serializer  =  BlockSerializer(instance, many=True)
-        print(serializer.data)
+        # print(serializer.data)
         return Response( {"blocked users" : serializer.data}, status=status.HTTP_200_OK)
     
 

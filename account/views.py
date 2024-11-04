@@ -35,7 +35,6 @@ User = get_user_model()
 
 
 
-
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
 
@@ -55,7 +54,9 @@ def get_tokens_for_user(user):
 class SignUpView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, format=None):
-        # print(request.data)
+        print(request.data, "------------------------------------------")
+        if request.data.get('email'):
+            request.data['email'] = request.data.get('email').lower()
         serializer = UserSerializer(data=request.data)
      
 
@@ -64,11 +65,13 @@ class SignUpView(APIView):
             if user:
                 print("user already exists -    -    -  ")
                 return Response("please change your email or login this email is alredy register",status=status.HTTP_400_BAD_REQUEST)
-
+       
+        
        
         if serializer.is_valid():
             password = make_password(serializer.validated_data['password'])
             serializer.validated_data['password'] = password
+
             serializer.save()
             user = User.objects.get(email=serializer.validated_data['email'])
             token = get_tokens_for_user(user)
@@ -83,30 +86,13 @@ class SignUpView(APIView):
 class LogInview(APIView):
     permission_classes = [AllowAny]
     def post(self, request, format=None):
+        if request.data.get('email'):
+            request.data['email'] = request.data.get('email').lower()
   
         serializer  = LoginSerializer(data=request.data)
 
         is_user = User.objects.filter(email=request.data['email']).exists()
-        # tracking_detail = tracking_details(149331877648230)
-        # print(tracking_details)
-        # create_shipment = create_pickup(address="abc", user=request.user)
-        # check_abavility =  check_pickup_availability("bcv","hg")
-        # print("------------------",check_abavility)
-        # cancel_pick = cancel_pick_up("n")
-        # print("-------------------", cancel_pick) 
-        # print("---------------------bf")
-        # create_shipment_for_product()
-        
-        # print("---------------------af")
-        # create_pickup("w", "es")
-        # token = get_shiprocket_token()
-        # print(token)
-        # print(token["token"])
-        # create_quick_order("add", "prod_id")
-        
-        
-
-
+    
       
 
         try:
@@ -138,17 +124,7 @@ class LogInview(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
-            # user = User.objects.get(email=email)
-            # if check_password(password, user.password):
-            #     print('------------------inside log in')
-               
-            #     login(request, user)
-            #     token = get_tokens_for_user(user)
-            #     new_data = serializer.data 
-            #     new_data['token'] =  token
-            #     return Response(new_data, status=status.HTTP_200_OK)
-            # else:
-            #     return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+         
 
 
 
@@ -157,24 +133,6 @@ class LogInview(APIView):
 
 
 
-
-
-
-            # user = authenticate(request, email=email, password=password)
-            # print(user)
-
-    
-            # if user is not None:
-            #     print('------------------inside log in')
-               
-            #     login(request, user)
-            #     token = get_tokens_for_user(user)
-            #     new_data = serializer.data 
-            #     new_data['token'] =  token
-            #     return Response(new_data,status=status.HTTP_200_OK)
-            # else:
-            #     return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 """{
