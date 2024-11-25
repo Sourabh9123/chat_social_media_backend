@@ -58,7 +58,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
         # WebSocket connection handshake
-        room_id = "video_call"
+        room_id = "chat_room"
         self.room_group_name = f'chat_{room_id}' 
      
         query_string = self.scope['query_string'].decode("utf-8")
@@ -71,6 +71,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "email": user.email,
             "first_name": user.first_name,
             "last_name": user.last_name,
+            "username" :user.username
         }
         
         set_online_user(user_json) # set the user online
@@ -104,7 +105,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Called when the WebSocket closes for any reason
         print("inside disconnect")
         user_id = self.scope["user"].id
-        remove_online_user(user_id)
+        remove_online_user(user_id) # remove online user
 
         await self.channel_layer.group_discard(
             self.room_group_name,

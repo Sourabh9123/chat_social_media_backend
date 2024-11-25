@@ -45,7 +45,7 @@ class PostListCreateView(GenericAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
     pagination_class = PostPagination
-    # permission_classes = []
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         # current_user = User.objects.get(email="a@a.com")
@@ -59,15 +59,20 @@ class PostListCreateView(GenericAPIView):
         # instance = self.get_queryset().exclude(author__in=blocked_users).order_by("-created_at")
 
         # instance_ = Post.objects.prefetch_related('likes', 'comments', 'author__saved_posts').order_by('-created_at')
-        instance_ = Post.objects.select_related('author') \
-                    .prefetch_related('likes', 'comments', 'author__saved_posts') \
-                    .order_by('-created_at')
-        
-        # page = self.paginate_queryset(instance)
+        # instance_ = Post.objects.select_related('author') \
+        #             .prefetch_related('likes', 'comments', 'author__saved_posts') \
+        #             .order_by('-created_at')
 
-        # if page is not None:
-        #     serializer = self.get_serializer(page, many=True, context={'request': request})
-        #     return self.get_paginated_response(serializer.data) # Return paginated response
+        instance_ = (Post.objects.select_related('author')  
+                    .prefetch_related('likes', 'comments', 'author__saved_posts')  
+                    .order_by('-created_at'))
+
+        
+        page = self.paginate_queryset(instance_)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data) # Return paginated response
 
 
         serializer = self.get_serializer(instance_ , many=True,context={'request': request})
@@ -376,3 +381,9 @@ class PostSavedListCreateView(GenericAPIView):
         return Response({"data" : serializer.data}, status=status.HTTP_200_OK)
     
 
+class GetPostPicturesListView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostListSerializer
+
+    def get(self, request, *args, **kwargs):
+        return Response({"data":"data"}, status=status.HTTP_200_OK)

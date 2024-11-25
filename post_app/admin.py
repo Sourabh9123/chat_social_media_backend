@@ -10,6 +10,7 @@ class BlockAdmin(admin.ModelAdmin):
 class PostAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'author','created_at')  # Add the fields you want to display, including 'id'
     ordering = ('created_at',)   #('-created_at',)
+    search_fields = ('id','title', 'author',)
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'post', 'text','parent')  # Add 'id' and other relevant fields
