@@ -6,8 +6,10 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
-    TokenBlacklistView
+    TokenBlacklistView,
+  
 )
+
 
 
 
@@ -19,6 +21,7 @@ urlpatterns = [
     path('logout/',views.LogOutView.as_view(), name='logout'),
     path('change-passowrd/',views.PasswordChangeView.as_view(), name='password-change'),
     path('google/login/',GoogleLogin.as_view(), name='google-login'),
+    path('details/<str:token>/',views.GetUserDetailsByToken.as_view(), name='get-details-by-token' ),
     
 
     #jwt token

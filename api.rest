@@ -146,3 +146,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 #   "results": [
 #   ]
 # }
+
+
+
+
+
+
+
+
+
+
+
+
+
+###
+GET http://localhost:8000/auth/details/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzMjkwNzE2LCJpYXQiOjE3MzMyMzY3MTYsImp0aSI6ImY0MzMzNGE3NmM1OTRhODRiMTY5MDU2NjM4ODhmMDI5IiwidXNlcl9pZCI6IjQzNWZjYzI5LWUwN2YtNDg4Zi1iOTlkLTYxMWY2MGRjZmMwOSJ9.w3e2DtGjIHemoD459bG9X7S8RHBDogqmcRLyDP_Vr_s/
+Content-Type: application/json
+# Authorization : Bearer 

@@ -51,6 +51,37 @@ def get_tokens_for_user(user):
 #   "last_name": "tws"
   
 
+
+from django.conf import settings
+# SECRET_KEY
+from account.decoted_jwt import decode_jwt_token
+
+class GetUserDetailsByToken(APIView):
+
+    def get(self, request, *args, **kwargs):
+        access_token = kwargs.get("token")
+        # print(access_token, "-------")
+        # print("sec ------ key ", settings.SECRET_KEY)
+
+        user_id = decode_jwt_token(token=access_token , token_secret=settings.SECRET_KEY)
+        print(user_id, " -------------------")
+        if  user_id is None:
+            print("inside the condition-------------")
+            return Response({"data" :"invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        instance = User.objects.get(id=user_id)
+        serializer = UserSerializer(instance)
+        data = serializer.data
+        data["token"] = get_tokens_for_user(instance)
+ 
+        return Response({"data" :data}, status=status.HTTP_200_OK)
+
+
+
+        # return Response({"data": })
+
+
+
 class SignUpView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, format=None):

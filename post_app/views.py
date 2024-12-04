@@ -3,7 +3,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from account.models import User
-from account.serializers import UserSerializer, UserSerializerGeneralInfo
+from account.serializers import  (
+                                    UserSerializer,
+                                    UserSerializerGeneralInfo
+                                          )
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import  IsAuthenticated
@@ -18,7 +21,7 @@ from post_app.models import (
 from post_app.serializers import (
     PostCreateSerializer,
     SavedPostSerializer,
-    PostListSerializer ,
+    PostListSerializer,
     CommentSerializer,
     BlockSerializer,
     LikeSerializer,
