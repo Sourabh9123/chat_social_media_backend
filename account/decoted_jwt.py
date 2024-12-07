@@ -8,9 +8,9 @@ def decode_jwt_token(token:str, token_secret):
         # print("Verified payload:", decoded_payload)
         return str(decoded_payload['user_id'])
     except jwt.ExpiredSignatureError:
-        print("Token has expired")
+        # print("Token has expired")
         return None
     except jwt.InvalidTokenError:
-        print("Invalid token")
+        # print("Invalid token")
         return None
 

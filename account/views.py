@@ -48,7 +48,7 @@ def get_tokens_for_user(user):
 #    "password": "9123",
 #     "email": "admin1@gmai.com",
 #     "first_name": "test",
-#   "last_name": "tws"
+#       "last_name": "tws"
   
 
 
@@ -64,10 +64,10 @@ class GetUserDetailsByToken(APIView):
         # print("sec ------ key ", settings.SECRET_KEY)
 
         user_id = decode_jwt_token(token=access_token , token_secret=settings.SECRET_KEY)
-        print(user_id, " -------------------")
+        # print(user_id, " -------------------")
         if  user_id is None:
-            print("inside the condition-------------")
-            return Response({"data" :"invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+            # print("inside the condition-------------")
+            return Response({"data" :"failed"}, status=status.HTTP_400_BAD_REQUEST)
         
         instance = User.objects.get(id=user_id)
         serializer = UserSerializer(instance)
@@ -85,7 +85,7 @@ class GetUserDetailsByToken(APIView):
 class SignUpView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, format=None):
-        print(request.data, "------------------------------------------")
+        # print(request.data, "------------------------------------------")
         if request.data.get('email'):
             request.data['email'] = request.data.get('email').lower()
         serializer = UserSerializer(data=request.data)
@@ -94,9 +94,9 @@ class SignUpView(APIView):
         if "email" in request.data:
             user = User.objects.filter(email=request.data.get("email"))
             if user:
-                print("user already exists -    -    -  ")
+                # print("user already exists -    -    -  ")
                 return Response("please change your email or login this email is alredy register",status=status.HTTP_400_BAD_REQUEST)
-       
+        
         
        
         if serializer.is_valid():
@@ -106,7 +106,7 @@ class SignUpView(APIView):
             serializer.save()
             user = User.objects.get(email=serializer.validated_data['email'])
             token = get_tokens_for_user(user)
-            # user = request.user()LO
+            # user = request.user()
         
             # print({'token':token, 'data' :serializer.data})
             
@@ -214,7 +214,7 @@ class PasswordChangeView(APIView):
         if serializer.is_valid():
             user = request.user
             
-            print(user)
+            # print(user)
             old_password = serializer.validated_data['old_password']
             new_password = serializer.validated_data['new_password']
             
