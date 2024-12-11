@@ -8,50 +8,13 @@ from rest_framework_simplejwt.tokens import AccessToken
 from django.conf import settings
 from channels.db import database_sync_to_async
 from urllib.parse import parse_qs
-import redis
+
+from redis_services.user_status import get_online_users, set_online_user,remove_online_user
 from account.serializers import UserSerializer
 
 
+
 User = get_user_model()
-
-### online user logic
-
-redis_client = redis.Redis(host='127.0.0.1', port=6379, db=0, decode_responses=True)
-
-
-def get_online_users():
-    users = redis_client.get("online_user")
-    if users is None:
-        return {}
-    return json.loads(users)
-
-
-def set_online_user(user_json):
-   
-    online_users = get_online_users()  
-    if not online_users:
-        print("No user is currently online")
-
-  
-    online_users[str(user_json['id'])] = user_json
-   
-    redis_client.set('online_user', json.dumps(online_users))
-
-    
-def remove_online_user(user_id):
-    online_users = get_online_users() 
-    if online_users is None:
-        return  print(f"None User is Online")
-    
-    if str(user_id) in online_users:
-        del online_users[str(user_id)] 
-        redis_client.set('online_user', json.dumps(online_users))  
-        print(f"User {user_id} removed from online users.")
-    else:
-        print(f"User {user_id} not found in online users.")
-
-
-### online user logic ends
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -60,7 +23,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # WebSocket connection handshake
         room_id = "chat_room"
         self.room_group_name = f'chat_{room_id}' 
-     
+        # print("--------------------------- scope consumer",self.scope)
+
         query_string = self.scope['query_string'].decode("utf-8")
         query_params = parse_qs(query_string)
         access_token = query_params.get("token")[0]
@@ -92,6 +56,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         await self.accept()  # Accept the WebSocket connection
         print("accepted")
+        online_user = get_online_users()
+        # print("online users -------", online_user)
+        print(list(online_user.keys()))
      
         await self.send(text_data=json.dumps({
                         "full_name" : str(user.first_name) + " " +str(user.last_name),
@@ -114,16 +81,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
        
+        print(text_data)
+        print(type(text_data))
 
-        json_data = json.loads(text_data)
+        json_data = json.loads(text_data) # converting string data to json or dictionery
     
         await self.channel_layer.group_send(
             self.room_group_name,
             {
-                'type': 'chat_message',  # Custom message type
-                'message': text_data['message'],
-                "sender_id" : text_data['sender'],
-                "receiver_id" : text_data['receiver'],
+                'type': json_data['type'],  # Custom message type here type == chat_message
+                'message': json_data['message'],
+                "sender_id" : json_data['sender'],
+                "receiver_id" : json_data['receiver'],
                 
             }
         )
@@ -148,8 +117,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         # Sends a message back to WebSocket
         message = event['message']
-
-
-        await self.send(text_data=message)
+        await self.send(text_data=json.dumps(message))
 
    
