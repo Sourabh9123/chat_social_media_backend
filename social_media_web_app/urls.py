@@ -25,6 +25,7 @@ urlpatterns = [
     path("post/",include("post_app.urls")),
     path("api/profile/",include("profile_app.urls")),
     path('silk', include('silk.urls', namespace='silk')),
+    path('api/chat/', include("chat.urls")),
 
 ]
 

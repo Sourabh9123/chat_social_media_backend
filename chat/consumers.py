@@ -11,7 +11,7 @@ from urllib.parse import parse_qs
 
 from redis_services.user_status import get_online_users, set_online_user,remove_online_user
 from account.serializers import UserSerializer
-
+import time
 
 
 User = get_user_model()
@@ -23,6 +23,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # WebSocket connection handshake
         room_id = "chat_room"
         self.room_group_name = f'chat_{room_id}' 
+        print(time.time(), " -----------------------------")
+        
         # print("--------------------------- scope consumer",self.scope)
 
         query_string = self.scope['query_string'].decode("utf-8")
