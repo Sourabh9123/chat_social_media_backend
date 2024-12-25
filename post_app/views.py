@@ -84,7 +84,7 @@ class PostListCreateView(GenericAPIView):
 
 
     def post(self, request,*args, **kwargs):
-        
+      
         # will get user by token send from frontend
         user = request.user
         serializer = PostCreateSerializer(data=request.data)

@@ -119,6 +119,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         # Sends a message back to WebSocket
         message = event['message']
+        print("------------------------------------- receive")
         await self.send(text_data=json.dumps(message))
 
    
