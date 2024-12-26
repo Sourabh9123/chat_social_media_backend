@@ -269,7 +269,7 @@ class LikeListCreateView(GenericAPIView):
     
             return Response({"data":"like Removed"}, status=status.HTTP_200_OK)
         serializer = LikeSerializer(like)
-        return Response({"data":serializer.data}, status=status.HTTP_200_OK)
+        return Response({"data":serializer.data}, status=status.HTTP_201_CREATED)
             
 
 
